@@ -4,7 +4,7 @@
 
 namespace cptools::config {
 
-nlohmann::json read_config_file() { return util::read_json_file("config.json"); }
+nlohmann::json read_config_file() { return util::read_json_file(config_path_name); }
 
 std::string get_polygon_problem_id(const nlohmann::json &json_object) {
     const std::string path = "problem|polygonId";
@@ -18,18 +18,18 @@ std::string get_tool_file_name(const nlohmann::json &json_object, const std::str
     return file_name;
 }
 
-std::vector<std::string> get_solutions_file_names(const nlohmann::json &json_object,
-                                                  const std::string &tag) {
+std::vector<std::string> get_solutions_file_names(const std::string &tag) {
+    const auto config_json = read_config_file();
     const std::string path = "solutions|" + tag;
 
     if (tag == "default") {
-        auto file_name = util::get_json_value<std::string>(json_object, path, "");
+        auto file_name = util::get_json_value<std::string>(config_json, path, "");
         if (file_name == "")
             throw(exceptions::invalid_config_error("No valid default solution found"));
         return std::vector<std::string>{file_name};
     }
 
-    auto file_names = util::get_json_value<std::vector<std::string>>(json_object, path, {});
+    auto file_names = util::get_json_value<std::vector<std::string>>(config_json, path, {});
     return file_names;
 }
 
